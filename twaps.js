@@ -1,8 +1,3 @@
-function a() {
-  if (x) {
-    return [1, 2];
-  }
-}
 // Runs once per call (scheduled every ~5 minutes). State lives in state.json.
 
 const fs = require("fs");
