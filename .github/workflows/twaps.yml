@@ -25,12 +25,19 @@ jobs:
 
       - name: Check TWAPs and post to Discord
         run: node twaps.js
+        continue-on-error: true
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+      - name: Update pressure board
+        run: node pressure.js
+        continue-on-error: true
+        env:
+          DISCORD_PRESSURE_WEBHOOK_URL: ${{ secrets.DISCORD_PRESSURE_WEBHOOK_URL }}
 
       - name: Save what was posted
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add state.json
-          git diff --cached --quiet || (git commit -m "update state" && git push)
+          for f in state.json pressure.json; do if [ -f "$f" ]; then git add "$f"; fi; done
+          git diff --cached --quiet || (git commit -m "update state" && git pull --rebase && git push)
